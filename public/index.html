@@ -1,1 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Random Quote API</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #121212;
+            color: #ffffff;
+            text-align: center;
+            padding: 20px;
+        }
+        #quote-container {
+            margin: 50px auto;
+            padding: 20px;
+            border: 1px solid #444;
+            border-radius: 10px;
+            background-color: #1e1e1e;
+            max-width: 700px;
+        }
+        #quote {
+            font-size: 2em; /* Larger font size for the quote */
+            margin-bottom: 20px;
+        }
+        #author {
+            font-size: 1.5em; /* Larger font size for the author */
+            color: #888;
+        }
+        #json-output {
+            font-size: 1.2em; /* Font size for the raw JSON response */
+            background-color: #333;
+            color: #ddd;
+            padding: 10px;
+            border-radius: 5px;
+            text-align: left;
+            margin-top: 20px;
+            overflow-x: auto;
+            white-space: pre-wrap; /* Ensures JSON wraps within the container */
+        }
+        button {
+            margin-top: 20px;
+            padding: 15px 30px;
+            background-color: #007BFF;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1.2em; /* Larger button font size */
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div id="quote-container">
+        <div id="quote">Loading quote...</div>
+        <div id="author"></div>
+        <button id="new-quote">Get New Quote</button>
+        <pre id="json-output"></pre>
+    </div>
 
+    <script>
+        const quoteElement = document.getElementById('quote');
+        const authorElement = document.getElementById('author');
+        const jsonOutputElement = document.getElementById('json-output');
+        const newQuoteButton = document.getElementById('new-quote');
+
+        async function fetchQuote() {
+            try {
+                const response = await fetch('/api/quote');
+                const data = await response.json();
+
+                if (data.success) {
+                    // Display the quote and author
+                    quoteElement.textContent = `"${data.quote}"`;
+                    authorElement.textContent = `- ${data.Author}`;
+                } else {
+                    quoteElement.textContent = "Failed to load quote.";
+                    authorElement.textContent = "";
+                }
+
+                // Pretty-print the JSON response
+                jsonOutputElement.textContent = JSON.stringify(data, null, 2);
+            } catch (error) {
+                console.error('Error fetching quote:', error);
+                quoteElement.textContent = "An error occurred.";
+                authorElement.textContent = "";
+                jsonOutputElement.textContent = `Error: ${error.message}`;
+            }
+        }
+
+        // Fetch a new quote when the page loads
+        fetchQuote();
+
+        // Fetch a new quote on button click
+        newQuoteButton.addEventListener('click', fetchQuote);
+    </script>
+</body>
+</html>
